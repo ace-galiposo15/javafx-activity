@@ -1,6 +1,6 @@
 package aclcbukidnon.com.javafxactivity.controllers;
 
-import javafx.beans.value.ObservableValue;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -38,8 +38,19 @@ public class TodoController {
 
 
         var result = dialog.showAndWait();
-        result.ifPresent(text -> System.out.println(text));
+        result.ifPresent(text -> {
+            if (!text.isBlank()) {
+                int selectedIndex = todoList.getSelectionModel().getSelectedIndex();
+                if (selectedIndex >= 0) {
+                    todoList.getItems().set(selectedIndex, text);
+                }
+
+            }
+        });
     }
+
+
+
 
 
 
@@ -50,7 +61,11 @@ public class TodoController {
 
 
         var result = dialog.showAndWait();
-        result.ifPresent(text -> System.out.println(text));
+        result.ifPresent(text ->{
+         if(!text.isBlank()){
+             todoList.getItems().add(text);
+         }
+        });
     }
 
     @FXML
@@ -63,12 +78,23 @@ public class TodoController {
 
         var result = confirm.showAndWait();
         if (result.isPresent()) {
-            result.get();
-        }// User clicked OK
+            var selectedItem = todoList.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                todoList.getItems().remove(selectedItem);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "No item selected to delete.", ButtonType.OK);
+                alert.showAndWait();
+            }
+        }
     }
-
     @FXML
     protected void onListEdit(){
-
+        var selectedItem = todoList.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            onTodoListItemClick(selectedItem);
+        } else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Select an item to edit first.", ButtonType.OK);
+            alert.showAndWait();
+        }
     }
 }
